@@ -3,9 +3,12 @@ const express = require('express');
 const { Pool } = require('pg');
 const multer = require('multer');
 const serverless = require('serverless-http');
+const cors = require('cors');
+
 
 const app = express();
 const port = process.env.PORT || 3000;
+
 
 // PostgreSQL connection
 const pool = new Pool({
@@ -53,6 +56,7 @@ app.post('/documents', upload.single('file'), async (req, res) => {
 });
 
 // GET /documents - List documents
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.get('/documents', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM documents ORDER BY created_at DESC');
