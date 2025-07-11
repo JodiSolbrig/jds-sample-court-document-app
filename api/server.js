@@ -9,6 +9,18 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Enable CORS first
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+  credentials: false
+}));
+
+// Middleware
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
 
 // PostgreSQL connection
 const pool = new Pool({
@@ -24,10 +36,6 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage });
-
-// Middleware
-app.use(express.json());
-app.use('/uploads', express.static('uploads'));
 
 // Create documents table
 pool.query(`
@@ -56,7 +64,8 @@ app.post('/documents', upload.single('file'), async (req, res) => {
 });
 
 // GET /documents - List documents
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: 'http://localhost:5173', methods: ['GET', 'POST'], allowedHeaders: ['Content-Type'] }));
+// app.use(cors({ origin: 'http://localhost:5173' }));
 app.get('/documents', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM documents ORDER BY created_at DESC');

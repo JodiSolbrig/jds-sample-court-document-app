@@ -9,21 +9,21 @@ interface Document {
   created_at: string;
 }
 
-function DocumentList() {
+function DocumentList({ refresh }: { refresh: number }) {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     axios.get('http://localhost:3000/documents')
       .then(response => {
-        console.log('Fetch response:', response.data);
+        console.log('Fetch response:', response.status, response.data);
         setDocuments(response.data);
       })
       .catch(error => {
-        console.error('Fetch error:', error.response?.data || error.message);
-        setError('Failed to load documents');
+        console.error('Fetch error:', error.message, error.response?.status);
+        setError('Failed to load documents: ' + error.message);
       });
-  }, []);
+  }, [refresh]);
 
   if (error) return <div>{error}</div>;
   if (documents.length === 0) return <div>No documents found.</div>;
