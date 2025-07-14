@@ -14,14 +14,16 @@ function DocumentList({ refresh }: { refresh: number }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/documents')
+    axios.get('https://4f4df5fc6883.ngrok-free.app/documents', {
+      headers: { 'ngrok-skip-browser-warning': 'true' }
+    })
       .then(response => {
         console.log('Fetch response:', response.status, response.data);
         setDocuments(response.data);
       })
       .catch(error => {
-        console.error('Fetch error:', error.message, error.response?.status);
-        setError('Failed to load documents: ' + error.message);
+        console.error('Fetch error:', error.message, error.response?.status, error.response?.data);
+        setError('Failed to load documents: ' + (error.response?.data?.error || error.message));
       });
   }, [refresh]);
 
@@ -46,7 +48,7 @@ function DocumentList({ refresh }: { refresh: number }) {
               <td>{doc.case_number}</td>
               <td>{doc.title}</td>
               <td>{new Date(doc.created_at).toLocaleDateString()}</td>
-              <td><a href={`http://localhost:3000/${doc.file_path}`} target="_blank">Download</a></td>
+              <td><a href={`https://4f4df5fc6883.ngrok-free.app/${doc.file_path}`} target="_blank">Download</a></td>
             </tr>
           ))}
         </tbody>

@@ -23,8 +23,11 @@ function DocumentUpload({ onUploadSuccess }: DocumentUploadProps) {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('http://localhost:3000/documents', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const response = await axios.post('https://4f4df5fc6883.ngrok-free.app/documents', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'ngrok-skip-browser-warning': 'true'
+        }
       });
       console.log('Upload response:', response.status, response.data);
       alert('Document uploaded successfully');

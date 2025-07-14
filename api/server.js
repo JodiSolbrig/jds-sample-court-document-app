@@ -12,15 +12,18 @@ const port = process.env.PORT || 3000;
 // Enable CORS first
 app.use(cors({
   origin: 'http://localhost:5173',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-  credentials: false
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'ngrok-skip-browser-warning']
 }));
 
 // Middleware
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
+// Add root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Court Document API', endpoints: ['GET /documents', 'POST /documents'] });
+});
 
 // PostgreSQL connection
 const pool = new Pool({
@@ -63,9 +66,6 @@ app.post('/documents', upload.single('file'), async (req, res) => {
   }
 });
 
-// GET /documents - List documents
-app.use(cors({ origin: 'http://localhost:5173', methods: ['GET', 'POST'], allowedHeaders: ['Content-Type'] }));
-// app.use(cors({ origin: 'http://localhost:5173' }));
 app.get('/documents', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM documents ORDER BY created_at DESC');
